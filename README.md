@@ -1,2 +1,9 @@
 # medium-cli
-CLI for medium.
+> CLI for medium.
+
+* Clone this directory.
+
+* Install using the following command :
+
+`npm install -g`
+
