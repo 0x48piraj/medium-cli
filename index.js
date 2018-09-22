@@ -58,8 +58,8 @@ program
  .parse(process.argv);
 
 if (program.username){
-	console.log('Extracting follower\'s count from @'+program.username, '...');
-	getFollwersForUser(program.username).then(console.log);
+  console.log('Extracting follower\'s count from @'+program.username, '...');
+  getFollwersForUser(program.username).then(console.log);
   console.log('Extracting following\'s count from @'+program.username, '...');
   getFollowingUser(program.username).then(console.log);
 }
