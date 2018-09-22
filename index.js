@@ -20,6 +20,11 @@ function extractFollowedByCount(profileData) {
   return _.get(profileData, `payload.references.SocialStats.${userId}.usersFollowedByCount`, 0);
 }
 
+function extractFollowByCount(profileData) {
+  const userId = _.get(profileData, 'payload.user.userId');
+  return _.get(profileData, `payload.references.SocialStats.${userId}.usersFollowedCount`, 0);
+}
+
 function getFollwersForUser(username) {
   const options = {
     uri: generateMediumProfileUri(username),
@@ -33,6 +38,19 @@ function getFollwersForUser(username) {
     });
 }
 
+function getFollowingUser(username) {
+  const options = {
+    uri: generateMediumProfileUri(username),
+    transform: massageHijackedPreventionResponse
+  };
+
+  return request(options)
+    .then(profileData => {
+      let numFollwers = extractFollowByCount(profileData);
+      return Promise.resolve(numFollwers);
+    });
+}
+
 
 program
  .version('0.0.1', '-v, --version')
@@ -42,6 +60,7 @@ program
 if (program.username){
 	console.log('Extracting follower\'s count from @'+program.username, '...');
 	getFollwersForUser(program.username).then(console.log);
-
+  console.log('Extracting following\'s count from @'+program.username, '...');
+  getFollowingUser(program.username).then(console.log);
 }
 else console.log("Please provide an @username\ntype mfcount --help for help.");
