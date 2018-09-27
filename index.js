@@ -1,11 +1,27 @@
 #!/usr/bin/env node
 
 const _ = require('lodash');
+const chalk = require('chalk');
+const figlet = require('figlet');
+const randomItem = require('random-item');
 var program = require('commander');
 const clc = require('cli-color');
 const request = require('request-promise');
 
 const JSON_HIJACKING_PREFIX = '])}while(1);</x>';
+
+var logo = randomItem(['Standard', 'Ghost']);
+const init = () => {
+	console.log(chalk.green(figlet.textSync("MEDIUM CLI", {
+		font: "logo",
+		horizontalLayout: "default",
+		verticalLayout: "default"
+	})
+	)
+);
+}
+init();
+
 
 function generateMediumProfileUri(username) {
   return `https://medium.com/@${username}?format=json`;
