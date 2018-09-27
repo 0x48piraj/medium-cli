@@ -2,7 +2,7 @@
 
 const _ = require('lodash');
 var program = require('commander');
-
+const clc = require('cli-color');
 const request = require('request-promise');
 
 const JSON_HIJACKING_PREFIX = '])}while(1);</x>';
@@ -30,14 +30,14 @@ function extractSocialData(linkedin){
   keys = "" ;
   //gets posts
   _.each( userId, function( val, key_for_posts ) {
-   //gets entries 
+   //gets entries
   entries = _.get(userId,`${key_for_posts}.virtuals.links.entries`);
-  
+
   _.each(entries,function(val, key_for_entries){
       keys = keys+"-> "+_.get(entries,`${key_for_entries}.url`)+"\n";
-      
+
   });
-    
+
 
   });
   return keys;
@@ -108,13 +108,12 @@ function getPosts(username){
     });
 }
 
-
 program
+ .option(clc.green('-u, --username <username>'), clc.bgGreen('\t\t\bThe user\'s username'))
+ .option(clc.yellow('-s, --socials <username>'), clc.bgYellow('\t\t\bThe user\'s connected urls'))
+ .option(clc.blue('-p, --posts <username>'), clc.bgBlue('\t\t\bThe user\'s posts urls'))
+ .option(clc.blue('-b, --posts <username>'), clc.bgBlue('\t\t\bThe user\'s bio urls'))
  .version('0.0.1', '-v, --version')
- .option('-u, --username <username>', 'The user\'s username')
- .option('-s, --socials <username>', 'The user\'s connected urls')
- .option('-p, --posts <username>', 'The user\'s posts urls')
- .option('-b, --posts <username>', 'The user\'s bio urls')
  .parse(process.argv);
 
 
