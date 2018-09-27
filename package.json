@@ -23,6 +23,7 @@
     "co": "^4.6.0",
     "co-prompt": "^1.0.0",
     "commander": "^2.18.0",
+    "figlet": "^1.2.0",
     "lodash": "^4.17.11",
     "random-item": "^1.0.0",
     "request": "^2.88.0",

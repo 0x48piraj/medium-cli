@@ -10,10 +10,10 @@ const request = require('request-promise');
 
 const JSON_HIJACKING_PREFIX = '])}while(1);</x>';
 
-var logo = randomItem(['Standard', 'Ghost']);
+var logo = randomItem(['Standard', 'Ghost', 'Dancing Font', 'Avatar', 'Alligator', 'Alphabet', 'Banner3-D', 'Bloody', 'Blocks', 'Block']);
 const init = () => {
 	console.log(chalk.green(figlet.textSync("MEDIUM CLI", {
-		font: "logo",
+		font: logo,
 		horizontalLayout: "default",
 		verticalLayout: "default"
 	})
