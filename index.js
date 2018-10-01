@@ -50,7 +50,10 @@ function extractSocialData(linkedin){
   entries = _.get(userId,`${key_for_posts}.virtuals.links.entries`);
 
   _.each(entries,function(val, key_for_entries){
-      keys = keys+"-> "+_.get(entries,`${key_for_entries}.url`)+"\n";
+
+	var link = _.get(entries,`${key_for_entries}.url`);
+	if(!keys.includes(link))
+      		keys = keys+"-> "+link+"\n";
 
   });
 
@@ -128,7 +131,7 @@ program
  .option(clc.green('-u, --username <username>'), clc.bgGreen('\t\t\bThe user\'s username'))
  .option(clc.yellow('-s, --socials <username>'), clc.bgYellow('\t\t\bThe user\'s connected urls'))
  .option(clc.blue('-p, --posts <username>'), clc.bgBlue('\t\t\bThe user\'s posts urls'))
- .option(clc.blue('-b, --posts <username>'), clc.bgBlue('\t\t\bThe user\'s bio urls'))
+ .option(clc.blue('-b, --bio <username>'), clc.bgBlue('\t\t\bThe user\'s bio urls'))
  .version('0.0.1', '-v, --version')
  .parse(process.argv);
 
