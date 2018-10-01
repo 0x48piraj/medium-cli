@@ -27,8 +27,15 @@ function generateMediumProfileUri(username) {
   return `https://medium.com/@${username}?format=json`;
 }
 
-function massageHijackedPreventionResponse(response) {
+function messageHijackedPreventionResponse(response) {
   return JSON.parse(response.replace(JSON_HIJACKING_PREFIX, ''));
+}
+
+function getCommonRequestOptions(username) {
+  return {
+    uri: generateMediumProfileUri(username),
+    transform: messageHijackedPreventionResponse
+  }
 }
 
 function extractFollowedByCount(profileData) {
@@ -41,90 +48,45 @@ function extractFollowByCount(profileData) {
   return _.get(profileData, `payload.references.SocialStats.${userId}.usersFollowedCount`, 0);
 }
 
-function extractSocialData(linkedin){
+function extractSocialData(linkedin) {
   const userId = _.get(linkedin, 'payload.references.Post');
-  keys = "" ;
+  keys = "";
   //gets posts
-  _.each( userId, function( val, key_for_posts ) {
-   //gets entries
-  entries = _.get(userId,`${key_for_posts}.virtuals.links.entries`);
-
-  _.each(entries,function(val, key_for_entries){
-
-	var link = _.get(entries,`${key_for_entries}.url`);
-	if(!keys.includes(link))
-      		keys = keys+"-> "+link+"\n";
-
-  });
-
-
-  });
-  return keys;
-}
-
-function extractPostData(profileData){
-  const userId = _.get(profileData, 'payload.references.Post');
-  keys = "" ;
-  _.each( userId, function( val, key_for_posts ) {
-    keys = keys+"-> "+_.get(userId,`${key_for_posts}.title`)+"\n";
-  });
-  return keys;
-}
-
-
-function getFollwersForUser(username) {
-  const options = {
-    uri: generateMediumProfileUri(username),
-    transform: massageHijackedPreventionResponse
-  };
-
-  return request(options)
-    .then(profileData => {
-      let numFollwers = extractFollowedByCount(profileData);
-      return Promise.resolve(numFollwers);
+  _.each(userId, function (val, key_for_posts) {
+    //gets entries
+    entries = _.get(userId, `${key_for_posts}.virtuals.links.entries`);
+    _.each(entries, function (val, key_for_entries) {
+      var link = _.get(entries, `${key_for_entries}.url`);
+      if (!keys.includes(link))
+        keys = keys + "-> " + link + "\n";
     });
+  });
+  return keys;
+}
+
+function extractPostData(profileData) {
+  const userId = _.get(profileData, 'payload.references.Post');
+  keys = "";
+  _.each(userId, function (val, key_for_posts) {
+    keys = keys + "-> " + _.get(userId, `${key_for_posts}.title`) + "\n";
+  });
+  return keys;
+}
+
+function getFollowersForUser(username) {
+  return request(getCommonRequestOptions(username)).then(extractFollowedByCount);
 }
 
 function getFollowingUser(username) {
-  const options = {
-    uri: generateMediumProfileUri(username),
-    transform: massageHijackedPreventionResponse
-  };
-
-  return request(options)
-    .then(profileData => {
-      let numFollwers = extractFollowByCount(profileData);
-      return Promise.resolve(numFollwers);
-    });
+  return request(getCommonRequestOptions(username)).then(extractFollowByCount);
 }
 
-
-
-function getSocials(username){
-  const options = {
-    uri: generateMediumProfileUri(username),
-    transform: massageHijackedPreventionResponse
-  };
-
-  return request(options)
-    .then(socials =>{
-        let socialurls = extractSocialData(socials);
-        return Promise.resolve(socialurls);
-    });
+function getSocials(username) {
+  return request(getCommonRequestOptions(username)).then(extractSocialData);
 }
 
-
-function getPosts(username){
-  const options = {
-    uri: generateMediumProfileUri(username),
-    transform: massageHijackedPreventionResponse
-  };
-
-  return request(options)
-    .then(posts =>{
-        let postsurls = extractPostData(posts);
-        return Promise.resolve(postsurls);
-    });
+function getPosts(username) {
+  return request(getCommonRequestOptions(username)).then(extractPostData);
 }
 
 program
@@ -136,21 +98,23 @@ program
  .parse(process.argv);
 
 
-if (program.username){
-  console.log('Extracting follower\'s count from @'+program.username, '...');
-  getFollwersForUser(program.username).then(console.log);
-  console.log('Extracting following\'s count from @'+program.username, '...');
-  getFollowingUser(program.username).then(console.log);
+if (program.username) {
+  getFollowersForUser(program.username).then(followers => {
+    console.log('Extracting follower\'s count from @' + program.username, '...', followers);
+  });
+  getFollowingUser(program.username).then(following => {
+    console.log('Extracting following\'s count from @' + program.username, '...', following);
+  });
 }
-else if(program.socials){
-  console.log('Getting the list of connected websites of '+program.socials, '...');
+else if (program.socials) {
+  console.log('Getting the list of connected websites of ' + program.socials, '...');
   getSocials(program.socials).then(console.log);
 }
-else if(program.posts){
-  console.log('Getting the list all posts '+program.posts, '...');
+else if (program.posts) {
+  console.log('Getting the list all posts ' + program.posts, '...');
   getPosts(program.posts).then(console.log);
 }
-else if(program.posts){
+else if (program.posts) {
   console.log("To be implemented");
 }
 else console.log("Please provide an @username\ntype mfcount --help for help.");
