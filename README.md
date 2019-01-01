@@ -1,4 +1,5 @@
-# medium-cli
+# Medium CLI
+
 > CLI for medium. (Under development)
 
 **NOTE :** This repository is Under Development.
